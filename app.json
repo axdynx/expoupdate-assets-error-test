@@ -3,13 +3,20 @@
     "name": "expoupdate-assets-error-test",
     "slug": "expoupdate-assets-error-test",
     "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "fingerprint"
+    },
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "expoupdateassetserrortest",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.axdynx.expoupdateassetserrortest",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +26,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.axdynx.expoupdateassetserrortest"
     },
     "web": {
       "output": "static",
@@ -43,6 +51,19 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "updates": {
+      "assetPatternsToBeBundled": [
+        "**/*"
+      ],
+      "fallbackToCacheTimeout": 0,
+      "checkAutomatically": "ON_LOAD"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b4dbdb87-3c25-4387-b0cd-588770a414c7"
+      }
     }
   }
 }
