@@ -96,9 +96,7 @@ This project includes:
 
 ### Bug Case ❌
 - Asset loading fails after OTA update
-- 404 or permission errors when fetching asset
-- Incorrect asset URI returned by `Asset.fromModule()`
-- Console errors related to file access
+
 
 ## Debug Information
 
@@ -147,16 +145,6 @@ When reporting issues, please include:
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
 ## Learn more
 

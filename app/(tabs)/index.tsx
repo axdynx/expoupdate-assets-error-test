@@ -1,19 +1,22 @@
-import { Asset } from 'expo-asset';
 import { Image } from 'expo-image';
 import * as Updates from 'expo-updates';
 import { useState } from 'react';
 import { Alert, Platform, Pressable, StyleSheet, View } from 'react-native';
 
+import { getHtmlDocuments, loadHtmlAsset } from '@/app/Functions';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 
 export default function HomeScreen() {
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
+  const [selectedDocument, setSelectedDocument] = useState<string>('sample1'); // Nom du document sélectionné
   async function onFetchUpdateAsync() {
     if (__DEV__) {
       Alert.alert('Expo Update', 'You are running in development mode, no updates are available.');
       return;
     }
+    setIsUpdating(true);
     try {
       const update = await Updates.checkForUpdateAsync();
       if (update.isAvailable) {
@@ -24,6 +27,8 @@ export default function HomeScreen() {
       }
     } catch (error) {
       Alert.alert('Expo Update Error', `Error fetching latest Expo update: ${error}`);
+    } finally {
+      setIsUpdating(false);
     }
   }
   const [htmlContent, setHtmlContent] = useState<string>('');
@@ -31,49 +36,8 @@ export default function HomeScreen() {
   const [updateInfo, setUpdateInfo] = useState<string>('');
   const [errorText, setErrorText] = useState<string>('');
 
-  const loadHtmlAsset = async () => {
-    setErrorText('');
-    try {
-      setIsLoading(true);
-      console.log('🚀 Loading HTML file with Asset.fromModule()...');
-      // Update information
-      const updateStatus = __DEV__ ? false : (await Updates.checkForUpdateAsync()).isAvailable;
-      const currentUpdate = Updates.updateId || 'Development';
-      const channel = Updates.channel || 'Development';
-      const debugInfo = `\n📱 Expo Updates Information:\n- Update ID: ${currentUpdate}\n- Channel: ${channel}\n- Update available: ${updateStatus ? 'Yes' : 'No'}\n- Running from bundle: ${Updates.isEmbeddedLaunch ? 'Yes' : 'No'}\n`;
-      setUpdateInfo(debugInfo);
-      console.log(debugInfo);
-      // Using expo-asset fromModule() function to load HTML file
-      const asset = Asset.fromModule(require('@/assets/html/sample2.html'));
-      await asset.downloadAsync();
-      console.log('✅ Asset loaded:', {
-        uri: asset.uri,
-        localUri: asset.localUri,
-        downloaded: asset.downloaded,
-        hash: asset.hash,
-        name: asset.name
-      });
-      // Read file content
-      const response = await fetch(asset.localUri || asset.uri);
-      const content = await response.text();
-      setHtmlContent(content);
-      setErrorText('');
-      console.log('📄 HTML content loaded, length:', content.length);
-      Alert.alert(
-        'Asset Test Successful!', 
-        `HTML file loaded successfully!\nSize: ${content.length} characters\nURI: ${asset.uri}\n\nUpdate ID: ${currentUpdate}`
-      );
-    } catch (error) {
-      console.error('❌ Error loading HTML file:', error);
-      setHtmlContent('');
-      setErrorText(typeof error === 'object' ? JSON.stringify(error, null, 2) : String(error));
-      Alert.alert(
-        'Asset Test Error', 
-        `Loading failed: ${typeof error === 'object' ? JSON.stringify(error, null, 2) : String(error)}\n\nThis may indicate a bug with expo-asset and expo-updates!\n\nUpdate ID: ${Updates.updateId || 'Development'}`
-      );
-    } finally {
-      setIsLoading(false);
-    }
+  const handleLoadHtmlAsset = () => {
+    loadHtmlAsset(selectedDocument, setIsLoading, setHtmlContent, setErrorText, setUpdateInfo);
   };
 
   return (
@@ -90,10 +54,34 @@ export default function HomeScreen() {
         <ThemedText>
           Use the buttons below to test asset loading and OTA updates.
         </ThemedText>
+        
+        <View style={styles.selectorContainer}>
+          <ThemedText style={styles.selectorLabel}>Select document:</ThemedText>
+          <View style={styles.selectorButtons}>
+            {getHtmlDocuments().map((name) => (
+              <Pressable
+                key={name}
+                style={[
+                  styles.selectorButton,
+                  selectedDocument === name && styles.selectorButtonActive
+                ]}
+                onPress={() => setSelectedDocument(name)}
+              >
+                <ThemedText style={[
+                  styles.selectorButtonText,
+                  selectedDocument === name && styles.selectorButtonTextActive
+                ]}>
+                  {name}
+                </ThemedText>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+        
         <View style={{ marginVertical: 8 }}>
           <Pressable
             style={[styles.testButton, isLoading && styles.buttonDisabled]}
-            onPress={loadHtmlAsset}
+            onPress={handleLoadHtmlAsset}
             disabled={isLoading}
           >
             <ThemedText style={styles.buttonText}>
@@ -101,11 +89,12 @@ export default function HomeScreen() {
             </ThemedText>
           </Pressable>
           <Pressable
-            style={[styles.testButton]}
+            style={[styles.testButton, isUpdating && styles.buttonDisabled]}
             onPress={onFetchUpdateAsync}
+            disabled={isUpdating}
           >
             <ThemedText style={styles.buttonText}>
-              🔄 Fetch OTA Update
+              {isUpdating ? '⏳ Updating...' : '🔄 Fetch OTA Update'}
             </ThemedText>
           </Pressable>
         </View>
@@ -121,8 +110,8 @@ export default function HomeScreen() {
         {htmlContent && (
           <ThemedView style={styles.htmlPreview}>
             <ThemedText type="defaultSemiBold">HTML content loaded:</ThemedText>
-            <ThemedText style={styles.htmlContent} numberOfLines={10}>
-              {htmlContent.substring(0, 500)}...
+            <ThemedText style={styles.htmlContent}>
+              {htmlContent}
             </ThemedText>
           </ThemedView>
         )}
@@ -198,5 +187,37 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
     fontSize: 11,
     color: '#2c5282',
+  },
+  selectorContainer: {
+    marginVertical: 12,
+  },
+  selectorLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  selectorButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  selectorButton: {
+    backgroundColor: '#f0f0f0',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  selectorButtonActive: {
+    backgroundColor: '#007AFF',
+    borderColor: '#007AFF',
+  },
+  selectorButtonText: {
+    fontSize: 14,
+    color: '#333',
+  },
+  selectorButtonTextActive: {
+    color: 'white',
+    fontWeight: '600',
   },
 });

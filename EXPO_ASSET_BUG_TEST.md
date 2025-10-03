@@ -38,8 +38,6 @@ This test demonstrates a potential bug between `expo-asset` and `expo-updates` w
 
 ### Observed Behavior (if bug exists)
 - HTML file loading may fail after an OTA update
-- The URI returned by `Asset.fromModule()` may be incorrect
-- Possible errors: 404, permission denied, or file not found
 
 ## Test Code
 
