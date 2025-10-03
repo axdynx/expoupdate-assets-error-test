@@ -57,7 +57,8 @@
         "**/*"
       ],
       "fallbackToCacheTimeout": 0,
-      "checkAutomatically": "ON_LOAD"
+      "checkAutomatically": "NEVER",
+      "url": "https://u.expo.dev/b4dbdb87-3c25-4387-b0cd-588770a414c7"
     },
     "extra": {
       "router": {},

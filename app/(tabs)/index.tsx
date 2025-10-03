@@ -2,7 +2,7 @@ import { Asset } from 'expo-asset';
 import { Image } from 'expo-image';
 import * as Updates from 'expo-updates';
 import { useState } from 'react';
-import { Alert, Platform, Pressable, StyleSheet } from 'react-native';
+import { Alert, Button, Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { HelloWave } from '@/components/hello-wave';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
@@ -11,6 +11,19 @@ import { ThemedView } from '@/components/themed-view';
 import { Link } from 'expo-router';
 
 export default function HomeScreen() {
+  async function onFetchUpdateAsync() {
+    try {
+      const update = await Updates.checkForUpdateAsync();
+      if (update.isAvailable) {
+        await Updates.fetchUpdateAsync();
+        await Updates.reloadAsync();
+      } else {
+        Alert.alert('Expo Update', 'No update available.');
+      }
+    } catch (error) {
+      Alert.alert('Expo Update Error', `Error fetching latest Expo update: ${error}`);
+    }
+  }
   const [htmlContent, setHtmlContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [updateInfo, setUpdateInfo] = useState<string>('');
@@ -119,20 +132,22 @@ export default function HomeScreen() {
       </ThemedView>
       
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">🧪 Test Expo Asset + Updates</ThemedText>
+        <ThemedText type="subtitle">🧪 Expo Asset & OTA Update Test</ThemedText>
         <ThemedText>
-          This test loads an HTML file with expo-asset to detect bugs with expo-updates.
+          Use the buttons below to test asset loading and OTA updates.
         </ThemedText>
-        
-        <Pressable
-          style={[styles.testButton, isLoading && styles.buttonDisabled]}
-          onPress={loadHtmlAsset}
-          disabled={isLoading}
-        >
-          <ThemedText style={styles.buttonText}>
-            {isLoading ? '⏳ Loading...' : '🚀 Test Asset.fromModule()'}
-          </ThemedText>
-        </Pressable>
+        <View style={{ flexDirection: 'row', gap: 12, marginVertical: 8 }}>
+          <Pressable
+            style={[styles.testButton, isLoading && styles.buttonDisabled]}
+            onPress={loadHtmlAsset}
+            disabled={isLoading}
+          >
+            <ThemedText style={styles.buttonText}>
+              {isLoading ? '⏳ Loading asset...' : '🚀 Load HTML Asset'}
+            </ThemedText>
+          </Pressable>
+          <Button title="Fetch OTA Update" onPress={onFetchUpdateAsync} />
+        </View>
         
         {updateInfo && (
           <ThemedView style={styles.debugInfo}>
