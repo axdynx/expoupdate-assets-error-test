@@ -60,7 +60,7 @@
         "**/*"
       ],
       "fallbackToCacheTimeout": 0,
-      "checkAutomatically": "NEVER",
+      "checkAutomatically": "ON_LOAD",
       "url": "https://u.expo.dev/b4dbdb87-3c25-4387-b0cd-588770a414c7"
     },
     "extra": {
