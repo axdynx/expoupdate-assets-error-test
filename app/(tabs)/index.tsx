@@ -12,6 +12,10 @@ import { Link } from 'expo-router';
 
 export default function HomeScreen() {
   async function onFetchUpdateAsync() {
+    if (__DEV__) {
+      Alert.alert('Expo Update', 'You are running in development mode, no updates are available.');
+      return;
+    }
     try {
       const update = await Updates.checkForUpdateAsync();
       if (update.isAvailable) {
@@ -35,10 +39,10 @@ export default function HomeScreen() {
       setIsLoading(true);
       console.log('🚀 Loading HTML file with Asset.fromModule()...');
       // Update information
-      const updateStatus = await Updates.checkForUpdateAsync();
+      const updateStatus = __DEV__ ? false : (await Updates.checkForUpdateAsync()).isAvailable;
       const currentUpdate = Updates.updateId || 'Development';
       const channel = Updates.channel || 'Development';
-      const debugInfo = `\n📱 Expo Updates Information:\n- Update ID: ${currentUpdate}\n- Channel: ${channel}\n- Update available: ${updateStatus.isAvailable ? 'Yes' : 'No'}\n- Running from bundle: ${Updates.isEmbeddedLaunch ? 'Yes' : 'No'}\n`;
+      const debugInfo = `\n📱 Expo Updates Information:\n- Update ID: ${currentUpdate}\n- Channel: ${channel}\n- Update available: ${updateStatus ? 'Yes' : 'No'}\n- Running from bundle: ${Updates.isEmbeddedLaunch ? 'Yes' : 'No'}\n`;
       setUpdateInfo(debugInfo);
       console.log(debugInfo);
       // Using expo-asset fromModule() function to load HTML file
