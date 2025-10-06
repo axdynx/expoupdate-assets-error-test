@@ -3,7 +3,7 @@ import * as Updates from 'expo-updates';
 import { Alert } from 'react-native';
 
 const ImportDocuments = {
-  "sample1": require('@/assets/html/sample1.html'),
+  "sample1": require('@/assets/html/PROCES_VERBAL_INTERVENTION.html'),
   "sample2": require('@/assets/html/sample2.html')
 }
 
