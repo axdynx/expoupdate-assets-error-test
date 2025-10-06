@@ -3,9 +3,7 @@
     "name": "expoupdate-assets-error-test",
     "slug": "expoupdate-assets-error-test",
     "version": "1.0.0",
-    "runtimeVersion": {
-      "policy": "fingerprint"
-    },
+    "runtimeVersion": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "expoupdateassetserrortest",
