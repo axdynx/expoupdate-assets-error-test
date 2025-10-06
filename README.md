@@ -1,161 +1,156 @@
-# Expo Asset + Updates Bug Test App 🧪
+# Expo Asset + Expo Updates Bug Reproduction Test
 
-This is a test application designed to reproduce and demonstrate bugs between `expo-asset` and `expo-updates` when loading static assets after OTA updates.
+## 🐛 Bug Description
 
-## Problem Statement
+This test application demonstrates a critical bug in the interaction between `expo-asset` and `expo-updates` when loading HTML files through OTA (Over-The-Air) updates.
 
-When using `Asset.fromModule()` to load static files (like HTML files) in an Expo application with OTA updates enabled, there may be issues where assets fail to load correctly after an update is applied.
+### The Bug Scenario:
 
-## Test Setup
+1. **Initial Build**: Create a build with HTML assets - everything works correctly ✅
+2. **Modify HTML File**: Update `PROCES_VERBAL_INTERVENTION.html` content and publish an OTA update
+3. **Asset Loading Fails**: After the update, the HTML file becomes inaccessible through `Asset.fromModule()` ❌
+4. **Restore Original**: Revert the HTML file to its original state and publish another update
+5. **Asset Loading Works Again**: The file becomes accessible again ✅
 
-This project includes:
-- A simple React Native app with Expo Router
-- An HTML test file (`assets/html/sample2.html`)
-- A test interface to load and display the HTML content
-- Debugging information about Expo Updates status
+### Additional Observations:
 
-## Quick Start
+- The bug can also occur **WITHOUT modifying the file** when dealing with larger/heavier HTML files
+- The issue appears to be related to asset caching and update mechanisms between expo-asset and expo-updates
+- The problem is reproducible and affects production applications using OTA updates
 
-1. Install dependencies
+## 🚀 Quick Start
 
-   ```bash
-   npm install
-   ```
+### Prerequisites
+- Node.js 18+ 
+- Expo CLI
+- EAS CLI (`npm install -g @expo/eas-cli`)
 
-2. Start the development server
-
-   ```bash
-   npm run start
-   ```
-
-   Or use the test helper:
-
-   ```bash
-   npm run test-asset-bug start
-   ```
-
-3. Build for a specific platform (optional):
-
-   ```bash
-   npm run test-build android   # Android only
-   npm run test-build ios       # iOS only
-   npm run test-build           # All platforms
-   ```
-
-4. Publish OTA update for a specific platform (optional):
-
-   ```bash
-   npm run test-update android  # Android only
-   npm run test-update ios      # iOS only
-   npm run test-update          # All platforms
-   ```
-
-5. Open the app and navigate to the "Home" tab
-
-6. Click the "🚀 Test Asset.fromModule()" button to test asset loading
-
-## Testing the Bug
-
-### Development Testing
-1. Run the app in development mode
-2. Test the asset loading functionality
-3. Verify that HTML content loads correctly
-
-### Production Testing
-1. Build the app for production:
-   ```bash
-   npm run test-build
-   ```
-
-2. Publish an initial update:
-   ```bash
-   npm run test-update
-   ```
-
-3. Install the app on a device/emulator
-
-4. Make changes to the HTML file or app code
-
-5. Publish another update and test asset loading again
-
-## Test Scripts
-
-- `npm run test-asset-bug` - Show available commands
-- `npm run test-asset-bug info` - Display project information
-- `npm run test-asset-bug start` - Start development server
-- `npm run test-build [android|ios]` - Build for production testing (optionally only android or ios)
-- `npm run test-update [android|ios]` - Publish OTA update (optionally only android or ios)
-
-## What to Look For
-
-### Successful Case ✅
-- HTML file loads without errors
-- Asset URI is accessible
-- Content is displayed correctly
-- No fetch errors in console
-
-### Bug Case ❌
-- Asset loading fails after OTA update
-
-
-## Debug Information
-
-The test interface displays:
-- Current Expo Updates information
-- Asset loading status
-- File content preview
-- Error messages with debugging details
-
-## Files Structure
-
-```
-assets/
-  html/
-    sample2.html          # Test HTML file
-app/
-  (tabs)/
-    index.tsx            # Main test interface
-scripts/
-  test-asset-bug.js      # Test automation script
-EXPO_ASSET_BUG_TEST.md   # Detailed test documentation
+### Installation
+```bash
+npm install
 ```
 
-## Dependencies
+### Testing the Bug
 
-- `expo-asset`: Asset loading functionality
-- `expo-updates`: OTA update system
-- `expo-router`: Navigation system
+#### 1. Create Initial Build
+```bash
+# Android
+npm run test-build android
 
-## Learn More
+# iOS  
+npm run test-build ios
+```
 
-For detailed test procedures and troubleshooting, see [EXPO_ASSET_BUG_TEST.md](./EXPO_ASSET_BUG_TEST.md).
+#### 2. Test Asset Loading (Should Work)
+- Open the app
+- Select "PROCES_VERBAL_INTERVENTION" document
+- Click "🔄 Load HTML File" - should work ✅
 
-## Reporting Issues
+#### 3. Modify HTML File and Publish Update
+- Edit `assets/html/PROCES_VERBAL_INTERVENTION.html`
+- Add/modify content
+- Publish OTA update:
+```bash
+npm run test-update
+```
 
-When reporting issues, please include:
-- Expo SDK version
-- Platform (iOS/Android/Web)
-- Device/emulator information
-- Console logs from the test
-- Steps taken before the issue occurred
+#### 4. Test Asset Loading After Update (Bug Reproduction)
+- Force close and restart the app
+- Try to load the same document - should fail ❌
+- Check debug info to see asset loading errors
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+#### 5. Restore Original File and Update
+- Revert `PROCES_VERBAL_INTERVENTION.html` to original state
+- Publish another update:
+```bash
+npm run test-update
+```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+#### 6. Verify Fix
+- Restart the app
+- Test loading again - should work ✅
 
-## Learn more
+## 📱 App Features
 
-To learn more about developing your project with Expo, look at the following resources:
+### Main Interface
+- **Document Selector**: Choose between available HTML documents
+- **Load HTML File**: Test asset loading with detailed error reporting
+- **Fetch OTA Update**: Manually trigger update checks
+- **Debug Information**: Real-time display of:
+  - Expo Updates information (Update ID, channel, etc.)
+  - Asset object details (URI, hash, download status)
+  - Error messages in JSON format
+  - HTML content preview
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Debug Capabilities
+- Complete asset object inspection
+- Detailed error reporting with JSON.stringify
+- Update status and metadata display
+- Console logging for development analysis
 
-## Join the community
+## 🔧 Technical Details
 
-Join our community of developers creating universal apps.
+### Key Components
+- `app/(tabs)/index.tsx`: Main test interface
+- `app/Functions.tsx`: Asset loading logic and error handling
+- `assets/html/`: Test HTML files including the problematic `PROCES_VERBAL_INTERVENTION.html`
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Asset Loading Method
+```typescript
+const ImportedAsset = await Asset.fromModule(selectedFile[1]);
+const asset = await ImportedAsset.downloadAsync();
+const response = await fetch(asset.localUri || asset.uri);
+const content = await response.text();
+```
+
+### Error Detection
+The app captures and displays comprehensive error information:
+- Asset loading failures
+- URI/LocalURI accessibility issues
+- Network fetch errors
+- Update status anomalies
+
+## 📋 Reproduction Steps
+
+1. **Setup**: Install dependencies and configure EAS
+2. **Initial Build**: Create a production build
+3. **Baseline Test**: Verify all HTML assets load correctly
+4. **Modify Asset**: Change content in `PROCES_VERBAL_INTERVENTION.html`
+5. **Publish Update**: Deploy OTA update with modified asset
+6. **Reproduce Bug**: Observe asset loading failure
+7. **Restore Asset**: Revert to original HTML content
+8. **Publish Fix**: Deploy another OTA update
+9. **Verify Resolution**: Confirm asset loading works again
+
+## 🎯 Expected vs Actual Behavior
+
+### Expected Behavior
+- HTML assets should remain accessible after OTA updates regardless of content changes
+- `Asset.fromModule()` should consistently resolve asset URIs
+- File content updates should not break asset loading mechanisms
+
+### Actual Behavior
+- Modified HTML assets become inaccessible after OTA updates
+- Asset loading fails with URI/localURI errors
+- Restoring original content fixes the issue
+- Larger HTML files may trigger the bug even without modifications
+
+## 📊 Environment
+
+- **Expo SDK**: ~54.0.12
+- **expo-asset**: ^11.1.7
+- **expo-updates**: ^29.0.12
+- **React Native**: Latest compatible version
+- **EAS Build/Update**: Latest
+
+## 🤝 Contributing
+
+This is a bug reproduction test case. When testing:
+
+1. Follow the exact reproduction steps
+2. Document any variations in behavior
+3. Include device/platform information
+4. Capture console logs and error messages
+5. Note timing between updates and testing
+
+The goal is to provide a clear, reproducible case for the Expo team to investigate the interaction between expo-asset and expo-updates.
