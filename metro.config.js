@@ -5,8 +5,17 @@ const { getSentryExpoConfig } = require('@sentry/react-native/metro');
 const config = getSentryExpoConfig(__dirname);
 
 config.resolver.assetExts.push(
-  // Adds support for `.html` files
+  // Adds support for `.db` files for SQLite databases
+  'db'
+);
+config.resolver.assetExts.push(
+  // Adds support for `.html` files for web views
   'html'
 );
+config.resolver.assetExts.push(
+  // Adds support for `.json` files for hashes
+  'json'
+);
+
 
 module.exports = config;

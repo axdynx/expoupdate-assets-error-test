@@ -35,9 +35,10 @@ export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [updateInfo, setUpdateInfo] = useState<string>('');
   const [errorText, setErrorText] = useState<string>('');
+  const [assetDebugInfo, setAssetDebugInfo] = useState<string>('');
 
   const handleLoadHtmlAsset = () => {
-    loadHtmlAsset(selectedDocument, setIsLoading, setHtmlContent, setErrorText, setUpdateInfo);
+    loadHtmlAsset(selectedDocument, setIsLoading, setHtmlContent, setErrorText, setUpdateInfo, setAssetDebugInfo);
   };
 
   return (
@@ -53,6 +54,9 @@ export default function HomeScreen() {
         <ThemedText type="subtitle">🧪 Expo Asset & OTA Update Test</ThemedText>
         <ThemedText>
           Use the buttons below to test asset loading and OTA updates.
+        </ThemedText>
+        <ThemedText>
+          Updated 1
         </ThemedText>
         
         <View style={styles.selectorContainer}>
@@ -103,6 +107,15 @@ export default function HomeScreen() {
           <ThemedView style={styles.debugInfo}>
             <ThemedText style={styles.debugText}>
               {updateInfo}
+            </ThemedText>
+          </ThemedView>
+        )}
+        
+        {assetDebugInfo && (
+          <ThemedView style={styles.debugInfo}>
+            <ThemedText type="defaultSemiBold">Asset Debug Info:</ThemedText>
+            <ThemedText style={styles.debugText}>
+              {assetDebugInfo}
             </ThemedText>
           </ThemedView>
         )}

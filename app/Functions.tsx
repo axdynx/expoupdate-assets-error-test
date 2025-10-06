@@ -12,7 +12,8 @@ export const loadHtmlAsset = async (
   setIsLoading: (loading: boolean) => void,
   setHtmlContent: (content: string) => void,
   setErrorText: (error: string) => void,
-  setUpdateInfo: (info: string) => void
+  setUpdateInfo: (info: string) => void,
+  setAssetDebugInfo: (info: string) => void
 ) => {
   setErrorText('');
   try {
@@ -30,34 +31,43 @@ export const loadHtmlAsset = async (
     if (!selectedFile) {
       throw new Error('Selected document not found.');
     }
-    const asset = await Asset.loadAsync(selectedFile[1]);
-    if (!asset || asset.length === 0) {
+    const ImportedAsset = await Asset.fromModule(selectedFile[1]);
+
+    console.log('🚀 Imported asset:', ImportedAsset);
+    setAssetDebugInfo(JSON.stringify(ImportedAsset, null, 2));
+
+    const asset = await ImportedAsset.downloadAsync();
+    
+    // Debug: Display asset object as JSON
+    setAssetDebugInfo(JSON.stringify(asset, null, 2));
+    console.log('🔍 Asset debug info:', JSON.stringify(asset, null, 2));
+    
+    if (!asset) {
       throw new Error('Asset.loadAsync() returned no assets.');
     }
     // asset is an array when using loadAsync
-    const [firstAsset] = asset;
-    if (!firstAsset.localUri && !firstAsset.uri) {
+    if (!asset.localUri && !asset.uri) {
       throw new Error('Asset has no valid URI.');
     }
     // Ensure asset is downloaded
-    await firstAsset.downloadAsync();
+    await asset.downloadAsync();
     // Log asset details
     console.log('✅ Asset loaded:', {
-      uri: firstAsset.uri,
-      localUri: firstAsset.localUri,
-      downloaded: firstAsset.downloaded,
-      hash: firstAsset.hash,
-      name: firstAsset.name
+      uri: asset.uri,
+      localUri: asset.localUri,
+      downloaded: asset.downloaded,
+      hash: asset.hash,
+      name: asset.name
     });
     // Read file content
-    const response = await fetch(firstAsset.localUri || firstAsset.uri);
+    const response = await fetch(asset.localUri || asset.uri);
     const content = await response.text();
     setHtmlContent(content);
     setErrorText('');
     console.log('📄 HTML content loaded, length:', content.length);
     Alert.alert(
       'Asset Test Successful!', 
-      `HTML file loaded successfully!\nSize: ${content.length} characters\nURI: ${firstAsset.uri}\n\nUpdate ID: ${currentUpdate}`
+      `HTML file loaded successfully!\nSize: ${content.length} characters\nURI: ${asset.uri}\n\nUpdate ID: ${currentUpdate}`
     );
   } catch (error) {
     console.error('❌ Error loading HTML file:', error);
